@@ -1,0 +1,13 @@
+when@test:
+    security:
+        # Disable JWT authentication for tests
+        firewalls:
+            dev:
+                pattern: ^/(_(profiler|wdt)|css|images|js)/
+                security: false
+
+            api:
+                pattern: ^/api
+                stateless: true
+                # No authentication in test environment
+                security: false

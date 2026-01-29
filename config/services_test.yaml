@@ -1,0 +1,5 @@
+services:
+    # Make repository a singleton for tests so data persists across HTTP requests within same test
+    App\Infrastructure\Persistence\InMemoryEventRepository:
+        public: true
+        shared: true  # MUST be true for functional tests (persist across HTTP requests)

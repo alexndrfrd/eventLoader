@@ -1,0 +1,63 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    # Make classes in src/ available to be used as services
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Domain/Entity/'
+            - '../src/Domain/ValueObject/'
+            - '../src/Domain/Event/'
+            - '../src/Kernel.php'
+
+    # Domain Layer - Repository Interfaces (will be bound to implementations)
+    App\Domain\Repository\EventRepositoryInterface:
+        alias: App\Infrastructure\Persistence\InMemoryEventRepository
+
+    # Application Layer - Command Handlers
+    App\Application\Command\CreateEventCommandHandler:
+        arguments:
+            $eventRepository: '@App\Domain\Repository\EventRepositoryInterface'
+
+    # Application Layer - Query Handlers
+    App\Application\Query\GetEventQueryHandler:
+        arguments:
+            $eventRepository: '@App\Domain\Repository\EventRepositoryInterface'
+
+    # Infrastructure Layer - Repository Implementations
+    # Shared: true ensures same instance across all commands/requests
+    App\Infrastructure\Persistence\InMemoryEventRepository:
+        public: true
+        shared: true  # MUST be true so events persist across commands
+
+    # Controllers
+    App\Infrastructure\Http\Controller\:
+        resource: '../src/Infrastructure/Http/Controller/'
+        tags: ['controller.service_arguments']
+
+    # Security
+    App\Infrastructure\Security\InMemoryUserProvider:
+        public: true
+
+    # Redis Client for Distributed Coordination (optional)
+    Predis\ClientInterface:
+        class: Predis\Client
+        arguments:
+            - '%env(REDIS_URL)%'
+        tags:
+            - { name: 'monolog.logger', channel: 'event_loader' }
+
+    # Distributed Coordination Services
+    App\Infrastructure\Service\RedisLoaderCoordination:
+        arguments:
+            $redis: '@Predis\ClientInterface'
+            $instanceId: '%env(default:LOADER_INSTANCE_ID:auto)%'
+
+    App\Infrastructure\Service\RedisRateLimiter:
+        arguments:
+            $redis: '@Predis\ClientInterface'

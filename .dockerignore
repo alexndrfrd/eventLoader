@@ -1,0 +1,13 @@
+.git
+.gitignore
+.env.local
+.env.*.local
+vendor/
+var/
+README.md
+.dockerignore
+Dockerfile
+docker-compose.yml
+# Keep docker/php/php.ini and docker/nginx/default.conf for Dockerfile
+!docker/php/php.ini
+!docker/nginx/default.conf
