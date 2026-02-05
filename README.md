@@ -2,6 +2,8 @@
 
 Symfony application implementing an event sourcing loader with distributed coordination. The loader fetches events from multiple sources in a round-robin fashion, respecting rate limits and ensuring no duplicate processing across multiple instances.
 
+<!-- TODO: Consider adding more detailed examples for edge cases -->
+
 ## Quick Start
 
 ```bash
@@ -279,4 +281,3 @@ make redis-cli         # Access Redis CLI
 - Docker & Docker Compose
 - PHP 8.5+
 - Redis (for distributed mode)
-
